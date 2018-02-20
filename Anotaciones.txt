@@ -1,0 +1,14 @@
+
+
+   install dependencies:
+     > cd cajero-app && npm install
+
+   run the app:
+     > SET DEBUG=cajero-app:* & npm start
+
+
+SET DEBUG=cajero-app:* & nodemon npm start
+
+\\172.11.23.78\sharedFolder
+
+\\IT-LUISFER\sharedFolder

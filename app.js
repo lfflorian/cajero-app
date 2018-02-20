@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var stylus = require('stylus');
+var fs = require('fs');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -43,6 +44,16 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+//Codigo de programa
+
+const testFolder = '\\\\172.11.23.78\\\\sharedFolder';
+fs.readdir(testFolder, (err, files) => {
+  if (err) return console.log(err);
+  files.forEach(file => {
+    console.log(file);
+  });
 });
 
 module.exports = app;
