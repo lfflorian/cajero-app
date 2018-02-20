@@ -3,3 +3,11 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  form(action="/registro" method="post")
+    label(for="usuario") Usuario
+    input(type="text" id="usuario")
+    label(for="cuenta") Cuenta
+    input(type="text" id="cuenta")
+    label(for="monto") Monto
+    input(type="text" id="monto")
+    input(type="submit", value="registrar")

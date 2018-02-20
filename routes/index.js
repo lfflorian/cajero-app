@@ -18,4 +18,10 @@ router.get('/', function(req, res, next) {
   });
 });
 
+//ruta de registro
+router.get('/registro', function(req, res, next){
+  fs.appendFile(testFolder,"Otro Mensaje", (err) => {
+    if (err) return console.log(err);
+  });
+})
 module.exports = router;
