@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= direction
+  p La dirección de la base de datos es: #{direction}
+  form(action="/configuracion" method='POST' name='formulario')
+    label(for="ip") Ip
+    input(type="text" id="ip" name='ip')
+    input(type="submit", value="registrar")

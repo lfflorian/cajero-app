@@ -15,15 +15,23 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET post request */
-const testFolder = '\\\\172.11.23.78\\\\sharedFolder\\\\prueba.txt';
+var ipAdress = '172.11.23.78';
+const testFolder = `\\\\${ipAdress}\\\\sharedFolder\\\\prueba.txt`;
 router.post('/',middlewares, (req, res) => {
-  res.render('/',function() {
-    var cadena = `${req.body.usuario},${req.body.cuenta},${req.body.monto}\r\n`;
+  var cadena = `${req.body.usuario},${req.body.cuenta},${req.body.monto}\r\n`;
     fs.appendFile(testFolder,cadena, (err) => {
       if (err) return console.log(err);
     });
-  })
+  res.render('index', {title: 'Escrito Correctamente'})
 })
 
+router.get('/configuracion', function(req, res, next) {
+  res.render('configuration', {direction: ipAdress})
+});
+
+router.post('/configuracion',middlewares, (req, res) => {
+  ipAdress = req.body.ip;
+  res.render('index', {title: 'configuración realizada'})
+});
 
 module.exports = router;
