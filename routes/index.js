@@ -19,9 +19,9 @@ const middlewares = [
 }); */
 
 /* GET post request */
-// var ipAdress = '172.11.23.78';
+var ipAdress = '172.11.23.78';
 //var ipAdress = '172.31.2.98';
-var ipAdress = '192.168.0.15';
+//var ipAdress = '192.168.0.15';
 const testFolder = `\\\\${ipAdress}\\\\sharedFolder\\\\prueba.txt`;
 
 /// pagina de inicio
@@ -45,6 +45,9 @@ router.post('/createUser',middlewares, (req, res)=> {
   var user = req.body.nombre.charAt(0) + req.body.apellido.charAt(0);
   res.render('transaction', {usuario:user})
 })
+
+/// configuracion
+
 
 /* funciones */
 function conect() {
