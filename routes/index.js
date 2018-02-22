@@ -47,16 +47,40 @@ router.post('/createUser',middlewares, (req, res)=> {
 })
 
 /// configuracion
+router.get('/configuracion', (req, res, next)=> {
+  res.render('configuration', {direction: ipAdress})
+})
+
+router.post('/configuracion',middlewares, (req, res)=> {
+  ipAdress = req.body.ip;
+  res.render('configuration', {direction: ipAdress})
+})
+
+router.post('/test',middlewares, (req, res)=> {
+  var conexion = conect();
+  res.render('configuration', {direction: ipAdress, msg: conexion})
+})
 
 
 /* funciones */
 function conect() {
   var msg;
-    try {
-      fs.accessSync(testFolder)
+    /*try {
+      var smsg = fs.existsSync(testFolder,fs.constants.R_OK | fs.constants.W_OK)
       msg = 'Conexión realizada con exito!'
+      console.log(smsg)
     } catch (err) {
       msg = 'No fue posible conectar al servidor'
+      console.log('err')
+    }*/
+    if (fs.existsSync(testFolder))
+    {
+      msg = 'Conexión realizada con exito!'
+      console.log('ok')
+    } else 
+    {
+      msg = 'No fue posible conectar al servidor'
+      console.log('err')
     }
   return msg;
 }
