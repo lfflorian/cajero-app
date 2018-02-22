@@ -3,4 +3,9 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  p Contenido #{data}
+  form(action="/" method='POST' name='formulario')
+    select(name="usuario")
+      -each dt in data
+        option(value='#{dt}')= dt
+    a(href="createUser") crear usuario
+    input(type="submit", value="Entrar")

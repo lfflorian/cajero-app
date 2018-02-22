@@ -24,11 +24,26 @@ const middlewares = [
 var ipAdress = '192.168.0.15';
 const testFolder = `\\\\${ipAdress}\\\\sharedFolder\\\\prueba.txt`;
 
+/// pagina de inicio
 router.get('/', (req, res, next)=> {
   var conexion = conect();
   var usuarios = userExtract();
-  console.log(usuarios);
-  res.render('index', {title: conexion})
+  res.render('index', {title: conexion, data: usuarios})
+})
+
+router.post('/',middlewares, (req, res)=> {
+  var user = req.body.usuario;
+  res.render('transaction', {usuario:user})
+})
+
+/// crear usuario
+router.get('/createUser', (req, res, next)=> {
+  res.render('create-user')
+})
+
+router.post('/createUser',middlewares, (req, res)=> {
+  var user = req.body.nombre.charAt(0) + req.body.apellido.charAt(0);
+  res.render('transaction', {usuario:user})
 })
 
 /* funciones */
@@ -43,19 +58,15 @@ function conect() {
   return msg;
 }
 
-
 function userExtract() {
   var usuarios = new Array();
-  var resul = fs.readFile(testFolder, {encoding: 'utf-8'}, (err, file) => {
-    if (err) return console.log(err);
-      var lineas = file.split("\r\n");
-      lineas.forEach(linea => {
-        valor = linea.split(",");
-        usuarios.push(valor[0])
-      });
-    //console.log(usuarios)
+  var file = fs.readFileSync(testFolder,'utf-8');
+  var lineas = file.split("\r\n");
+  lineas.forEach(linea => {
+    var valor = linea.split(",");
+    usuarios.push(valor[0])
   });
-  return resul;
+  return usuarios;
 }
 
 
