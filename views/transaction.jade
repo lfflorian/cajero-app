@@ -3,11 +3,17 @@ extends layout
 block content
   h1= title
   p Welcome to #{usuario}
-  form(action="/" method='POST' name='formulario')
-    label(for="usuario") Usuario
-    input(type="text" id="usuario" name='usuario')
-    label(for="cuenta") Cuenta
-    input(type="text" id="cuenta" name='cuenta')
-    label(for="monto") Monto
+  form(action="/transaction" method='POST' name='formulario')
+    label(for="operacion") Operación a realizar
+    select(name="operacion")
+      option(value="depositar") Depositar
+      option(value="retirar") Retirar
+    label(for="monto") Monto de transacción
     input(type="text" id="monto" name='monto')
+    label(for="cuenta") Cuenta
+    select(name="cuenta")
+      option(value="nueva") Nueva
+      -each cuenta in cuentas
+        option(value='#{cuenta}')= cuenta
+    a(href="createUser") crear cuenta
     input(type="submit", value="registrar")

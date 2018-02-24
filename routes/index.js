@@ -19,13 +19,14 @@ const middlewares = [
 }); */
 
 /* GET post request */
-var ipAdress = '172.11.23.78';
+//var ipAdress = '172.11.23.78';
 //var ipAdress = '172.31.2.98';
-//var ipAdress = '192.168.0.15';
-const testFolder = `\\\\${ipAdress}\\\\sharedFolder\\\\prueba.txt`;
+var ipAdress = '192.168.0.15';
+const testFolder = `\\\\${ipAdress}\\\\sharedFolder`;
 
 /// pagina de inicio
 router.get('/', (req, res, next)=> {
+  //try catch 
   var conexion = conect();
   var usuarios = userExtract();
   res.render('index', {title: conexion, data: usuarios})
@@ -33,7 +34,8 @@ router.get('/', (req, res, next)=> {
 
 router.post('/',middlewares, (req, res)=> {
   var user = req.body.usuario;
-  res.render('transaction', {usuario:user})
+  var cuentas = cuentaExtract();
+  res.render('transaction', {usuario:user, cuentas: cuentas})
 })
 
 /// crear usuario
@@ -61,10 +63,21 @@ router.post('/test',middlewares, (req, res)=> {
   res.render('configuration', {direction: ipAdress, msg: conexion})
 })
 
+//transaccion
+router.post('/transaction',middlewares, (req, res)=> {
+  var operacion = (req.body.operacion == 'retirar') ? 'R' : 'D';
+  var monto = req.body.monto;
+  var cuenta = req.body.cuenta;
+  var total = transaction(operacion, monto, cuenta);
+  //var operacion = req.body.operacion
+  var usuarios = userExtract();
+  res.render('index', {title: total, data: usuarios})
+})
 
 /* funciones */
 function conect() {
   var msg;
+  var fileText = testFolder + '\\\\prueba.txt';
     /*try {
       var smsg = fs.existsSync(testFolder,fs.constants.R_OK | fs.constants.W_OK)
       msg = 'Conexión realizada con exito!'
@@ -73,7 +86,7 @@ function conect() {
       msg = 'No fue posible conectar al servidor'
       console.log('err')
     }*/
-    if (fs.existsSync(testFolder))
+    if (fs.existsSync(fileText))
     {
       msg = 'Conexión realizada con exito!'
       console.log('ok')
@@ -85,15 +98,48 @@ function conect() {
   return msg;
 }
 
+function transaction(operacion, monto, cuenta) {
+  fileText = testFolder + '\\\\' + cuenta + '.txt';
+  var file = fs.readFileSync(fileText,'utf-8');
+  var montoDisponible = parseInt(file);
+  var total;
+  if (operacion == 'D') {
+    total = montoDisponible + parseInt(monto);
+  } else 
+  {
+    total = montoDisponible - parseInt(monto); 
+  }
+  return total;
+}
+
 function userExtract() {
+  var fileText = testFolder + '\\\\prueba.txt';
   var usuarios = new Array();
-  var file = fs.readFileSync(testFolder,'utf-8');
+  var file = fs.readFileSync(fileText,'utf-8');
   var lineas = file.split("\r\n");
   lineas.forEach(linea => {
     var valor = linea.split(",");
-    usuarios.push(valor[0])
+    if (!usuarios.includes(valor[0]))
+    {
+      usuarios.push(valor[0])
+    }
   });
   return usuarios;
+}
+
+function cuentaExtract() {
+  var fileText = testFolder + '\\\\prueba.txt';
+  var cuentas = new Array();
+  var file = fs.readFileSync(fileText,'utf-8');
+  var lineas = file.split("\r\n");
+  lineas.forEach(linea => {
+    var valor = linea.split(",");
+    if (!cuentas.includes(valor[7]))
+    {
+      cuentas.push(valor[7])
+    }
+  });
+  return cuentas;
 }
 
 
