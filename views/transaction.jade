@@ -4,6 +4,7 @@ block content
   h1= title
   p Welcome to #{usuario}
   form(action="/transaction" method='POST' name='formulario')
+    input(type="text" value=usuario style="display:none" name="usuario")
     label(for="operacion") Operación a realizar
     select(name="operacion")
       option(value="depositar") Depositar

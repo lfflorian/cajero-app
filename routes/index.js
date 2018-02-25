@@ -12,12 +12,6 @@ const middlewares = [
   bodyParser.urlencoded()
 ]
 
-
-/* GET home page. */
-/*router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Cajero-App'});
-}); */
-
 /* GET post request */
 //var ipAdress = '172.11.23.78';
 //var ipAdress = '172.31.2.98';
@@ -44,8 +38,12 @@ router.get('/createUser', (req, res, next)=> {
 })
 
 router.post('/createUser',middlewares, (req, res)=> {
-  var user = req.body.nombre.charAt(0) + req.body.apellido.charAt(0);
-  res.render('transaction', {usuario:user})
+  var userid = req.body.nombre.charAt(0) + req.body.apellido.charAt(0);
+  var usuarios = userExtract();
+  var cuentas = cuentaExtract();
+  console.log(cuentas);
+  var user = `${userid.toUpperCase()}${pad(usuarios.length+1,4)}`;
+  res.render('transaction', {usuario:user, cuentas: cuentas})
 })
 
 /// configuracion
@@ -69,23 +67,27 @@ router.post('/transaction',middlewares, (req, res)=> {
   var monto = req.body.monto;
   var cuenta = req.body.cuenta;
   var total = transaction(operacion, monto, cuenta);
-  //var operacion = req.body.operacion
   var usuarios = userExtract();
-  res.render('index', {title: total, data: usuarios})
+  if (validacion(total))
+  {
+    escrituraArchivo(
+      req.body.usuario,
+      operacion,
+      monto,
+      total,
+      cuenta,
+    )
+    res.render('index', {title: total, data: usuarios})
+  } else 
+  {
+    res.render('index', {title: 'no hay suficiente saldo para realizar retiro', data: usuarios})
+  }
 })
 
 /* funciones */
 function conect() {
   var msg;
   var fileText = testFolder + '\\\\prueba.txt';
-    /*try {
-      var smsg = fs.existsSync(testFolder,fs.constants.R_OK | fs.constants.W_OK)
-      msg = 'Conexión realizada con exito!'
-      console.log(smsg)
-    } catch (err) {
-      msg = 'No fue posible conectar al servidor'
-      console.log('err')
-    }*/
     if (fs.existsSync(fileText))
     {
       msg = 'Conexión realizada con exito!'
@@ -98,18 +100,51 @@ function conect() {
   return msg;
 }
 
+//funciones de la transicion
 function transaction(operacion, monto, cuenta) {
   fileText = testFolder + '\\\\' + cuenta + '.txt';
   var file = fs.readFileSync(fileText,'utf-8');
-  var montoDisponible = parseInt(file);
+  var saldos = file.split("\r\n");
+  var noTransacciones = saldos.length-1;
+  var saldo = parseInt(saldos[noTransacciones]);
+  
   var total;
   if (operacion == 'D') {
-    total = montoDisponible + parseInt(monto);
+    total = saldo + parseInt(monto);
   } else 
   {
-    total = montoDisponible - parseInt(monto); 
+    total = saldo - parseInt(monto); 
   }
   return total;
+}
+
+function validacion(monto)
+{
+  return (monto < 0) ? false : true;
+}
+
+function escrituraArchivo(usuario, operacion, saldo, montoTotal, cuenta)
+{
+  var fileText = testFolder + '\\\\prueba.txt';
+  var fileCuenta = testFolder + '\\\\' + cuenta + '.txt';
+  var file = fs.readFileSync(fileText,'utf-8');
+  var transacciones = file.split("\r\n");
+  var noTransaccion = `T${pad(transacciones.length,5)}`;
+
+  var cadena = `\r\n${usuario},${(dateFormat(fecha,"dd/mm/yyyy"))},${(dateFormat(fecha,"hh:mm"))},${noTransaccion},${saldo},${operacion},${montoTotal},${cuenta}`;
+  fs.appendFile(fileText,cadena, (err) => {
+    if (err) return console.log(err);
+  });
+  fs.appendFile(fileCuenta,'\r\n'+montoTotal, (err) => {
+    if (err) return console.log(err);
+  });
+}
+//fin de funciones de la transicion
+
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
 function userExtract() {
@@ -141,23 +176,5 @@ function cuentaExtract() {
   });
   return cuentas;
 }
-
-
-/*router.post('/',middlewares, (req, res) => {
-  var cadena = `${req.body.usuario},${req.body.cuenta},${req.body.monto},${(dateFormat(fecha,"dd/mm/yyyy"))}\r\n`;
-    fs.appendFile(testFolder,cadena, (err) => {
-      if (err) return console.log(err);
-    });
-  res.render('index', {title: 'Escrito Correctamente'})
-})
-
-router.get('/configuracion', function(req, res, next) {
-  res.render('configuration', {direction: ipAdress})
-});
-
-router.post('/configuracion',middlewares, (req, res) => {
-  ipAdress = req.body.ip;
-  res.render('index', {title: 'configuración realizada'})
-});*/
 
 module.exports = router;
