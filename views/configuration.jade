@@ -1,12 +1,15 @@
 extends layout
 
 block content
-  h1= direction
-  p La dirección de la base de datos es: #{direction}
-  p= msg
-  form(action="/configuracion" method='POST' name='formulario')
-    label(for="ip") Ip
-    input(type="text" id="ip" name='ip')
-    input(type="submit", value="registrar")
-  form(action="/test" method='POST' name='formulario')
-    input(type="submit", value="probar")
+  .espacio
+  .contenido.col-sm-8.col-sm-offset-2
+    p La ip del servidor es: #{direction}
+    if msg != null 
+      .alert.alert-warning
+        = msg
+    form(action="/configuracion" method='POST' name='formulario')
+      label(for="ip") Ip
+      input(type="text" id="ip" name='ip', class="form-control")
+      input(type="submit", value="registrar", class="btn btn-success")
+    form(action="/test" method='POST' name='formulario')
+      input(type="submit", value="probar conexión", class="btn btn-info")

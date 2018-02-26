@@ -13,17 +13,25 @@ const middlewares = [
 ]
 
 /* GET post request */
-//var ipAdress = '172.11.23.78';
+var ipAdress = '172.11.23.78';
 //var ipAdress = '172.31.2.98';
-var ipAdress = '192.168.0.15';
-const testFolder = `\\\\${ipAdress}\\\\sharedFolder`;
+//var ipAdress = 'ALEXA';  //Aleexa
+//var ipAdress = '169.254.217.38';
+//var ipAdress = '192.168.0.15';
+var testFolder = `\\\\${ipAdress}\\\\sharedFolder`;
 
 /// pagina de inicio
 router.get('/', (req, res, next)=> {
   //try catch 
-  var conexion = conect();
-  var usuarios = userExtract();
-  res.render('index', {title: conexion, data: usuarios})
+  try {
+    var conexion = conect();
+    var usuarios = userExtract();
+    res.render('index', {title: conexion, data: usuarios})
+  } catch (err)
+  {
+    res.render('index', {title: 'No se pudo conectar al servidor, Favor realizar configuración', data: usuarios})
+  }
+  
 })
 
 router.post('/',middlewares, (req, res)=> {
@@ -41,7 +49,6 @@ router.post('/createUser',middlewares, (req, res)=> {
   var userid = req.body.nombre.charAt(0) + req.body.apellido.charAt(0);
   var usuarios = userExtract();
   var cuentas = cuentaExtract();
-  console.log(cuentas);
   var user = `${userid.toUpperCase()}${pad(usuarios.length+1,4)}`;
   res.render('transaction', {usuario:user, cuentas: cuentas})
 })
@@ -53,6 +60,7 @@ router.get('/configuracion', (req, res, next)=> {
 
 router.post('/configuracion',middlewares, (req, res)=> {
   ipAdress = req.body.ip;
+  testFolder = `\\\\${ipAdress}\\\\sharedFolder`;
   res.render('configuration', {direction: ipAdress})
 })
 
@@ -67,7 +75,9 @@ router.post('/transaction',middlewares, (req, res)=> {
   var monto = req.body.monto;
   var cuenta = req.body.cuenta;
   var total = transaction(operacion, monto, cuenta);
-  var usuarios = userExtract();
+  var usuarios;
+  //crearCuenta
+
   if (validacion(total))
   {
     escrituraArchivo(
@@ -77,9 +87,12 @@ router.post('/transaction',middlewares, (req, res)=> {
       total,
       cuenta,
     )
-    res.render('index', {title: total, data: usuarios})
+
+    usuarios = userExtract();
+    res.render('index', {title: `Transacción realizada en la cuenta ${cuenta}: Saldo total: ${total}`, data: usuarios})
   } else 
   {
+    usuarios = userExtract();
     res.render('index', {title: 'no hay suficiente saldo para realizar retiro', data: usuarios})
   }
 })
@@ -125,11 +138,12 @@ function validacion(monto)
 
 function escrituraArchivo(usuario, operacion, saldo, montoTotal, cuenta)
 {
+  fecha = new Date();
   var fileText = testFolder + '\\\\prueba.txt';
   var fileCuenta = testFolder + '\\\\' + cuenta + '.txt';
   var file = fs.readFileSync(fileText,'utf-8');
   var transacciones = file.split("\r\n");
-  var noTransaccion = `T${pad(transacciones.length,5)}`;
+  var noTransaccion = `T${pad(transacciones.length,4)}`;
 
   var cadena = `\r\n${usuario},${(dateFormat(fecha,"dd/mm/yyyy"))},${(dateFormat(fecha,"hh:mm"))},${noTransaccion},${saldo},${operacion},${montoTotal},${cuenta}`;
   fs.appendFile(fileText,cadena, (err) => {
@@ -139,7 +153,15 @@ function escrituraArchivo(usuario, operacion, saldo, montoTotal, cuenta)
     if (err) return console.log(err);
   });
 }
-//fin de funciones de la transicion
+//fin de funciones de la transicion7
+
+function createAcount() {
+  var fileText = testFolder + '\\\\prueba.txt';
+  var file = fs.readFileSync(fileText,'utf-8');
+  var lineas = file.split("\r\n");
+  var noCuentas = lineas.length;
+  var noCuenta = `C${pad(noCuentas, 4)}`;
+}
 
 function pad(n, width, z) {
   z = z || '0';

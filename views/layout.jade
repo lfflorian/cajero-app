@@ -2,13 +2,29 @@ doctype html
 html
   head
     title= title
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
   body
-  header(class="header")
-    nav(class="nav")
-      ul
-        li
-          a(href="configuracion") Configuración
-        li
-          a(href="/") Inicio
+  nav.navbar.navbar-inverse.navbar-fixed-top
+    .container-fluid
+      .navbar-header
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='#myNavbar')
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        if usuario != null
+          a.navbar-brand(href='/')= usuario
+        else
+          a.navbar-brand(href='/') Cajero-App
+      #myNavbar.collapse.navbar-collapse
+        ul.nav.navbar-nav
+          li
+            a(href='/') Inicio
+          li
+            a(href='configuracion') Configuración
   block content
+
+

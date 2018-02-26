@@ -5,3 +5,16 @@ body {
 a {
   color: #00b7ff;
 }
+.espacio {
+  margin: 15px;
+}
+.contenido {
+  display: block;
+}
+.contenido a {
+  display: block;
+}
+.contenido .btn {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}

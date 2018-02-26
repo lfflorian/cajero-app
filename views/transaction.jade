@@ -1,20 +1,21 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{usuario}
-  form(action="/transaction" method='POST' name='formulario')
-    input(type="text" value=usuario style="display:none" name="usuario")
-    label(for="operacion") Operación a realizar
-    select(name="operacion")
-      option(value="depositar") Depositar
-      option(value="retirar") Retirar
-    label(for="monto") Monto de transacción
-    input(type="text" id="monto" name='monto')
-    label(for="cuenta") Cuenta
-    select(name="cuenta")
-      option(value="nueva") Nueva
-      -each cuenta in cuentas
-        option(value='#{cuenta}')= cuenta
-    a(href="createUser") crear cuenta
-    input(type="submit", value="registrar")
+  .espacio
+  .contenido.col-sm-8.col-sm-offset-2
+    .alert.alert-success
+    h1= title
+    form(action="/transaction" method='POST' name='formulario')
+      input(type="text" value=usuario style="display:none" name="usuario")
+      label(for="operacion") Operación a realizar
+      select(name="operacion" class="form-control")
+        option(value="depositar") Depositar
+        option(value="retirar") Retirar
+      label(for="monto") Monto de transacción
+      input(type="text" id="monto" name='monto' class="form-control")
+      label(for="cuenta") Cuenta
+      select(name="cuenta" class="form-control")
+        option(value="nueva") Nueva
+        -each cuenta in cuentas
+          option(value='#{cuenta}')= cuenta
+      input(type="submit", value="Realizar transacción", class="btn btn-success")
