@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var dateFormat = require('dateformat');
 
 //formato de fecha
-var fecha = new Date();
+var fecha;
 
 var router = express.Router();
 
