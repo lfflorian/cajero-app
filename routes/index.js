@@ -117,7 +117,7 @@ function conect() {
 function transaction(operacion, monto, cuenta) {
   fileText = testFolder + '\\\\' + cuenta + '.txt';
   var file = fs.readFileSync(fileText,'utf-8');
-  var saldos = file.split("\r\n");
+  var saldos = file.trim().split("\r\n");
   var noTransacciones = saldos.length-1;
   var saldo = parseInt(saldos[noTransacciones]);
   
@@ -142,7 +142,8 @@ function escrituraArchivo(usuario, operacion, saldo, montoTotal, cuenta)
   var fileText = testFolder + '\\\\prueba.txt';
   var fileCuenta = testFolder + '\\\\' + cuenta + '.txt';
   var file = fs.readFileSync(fileText,'utf-8');
-  var transacciones = file.split("\r\n");
+  var transacciones = file.trim().split("\r\n");
+  console.log(transacciones);
   var noTransaccion = `T${pad(transacciones.length,4)}`;
 
   var cadena = `\r\n${usuario},${(dateFormat(fecha,"dd/mm/yyyy"))},${(dateFormat(fecha,"hh:mm"))},${noTransaccion},${saldo},${operacion},${montoTotal},${cuenta}`;
