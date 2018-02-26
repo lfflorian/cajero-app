@@ -143,7 +143,6 @@ function escrituraArchivo(usuario, operacion, saldo, montoTotal, cuenta)
   var fileCuenta = testFolder + '\\\\' + cuenta + '.txt';
   var file = fs.readFileSync(fileText,'utf-8');
   var transacciones = file.trim().split("\r\n");
-  console.log(transacciones);
   var noTransaccion = `T${pad(transacciones.length,4)}`;
 
   var cadena = `\r\n${usuario},${(dateFormat(fecha,"dd/mm/yyyy"))},${(dateFormat(fecha,"hh:mm"))},${noTransaccion},${saldo},${operacion},${montoTotal},${cuenta}`;
